@@ -4,6 +4,7 @@ class Transition {
   int id;
   
   double weight;
+  PVector direction;
   
   double currentPressureDifferential;
   long currentPartsTransfer;
@@ -14,6 +15,11 @@ class Transition {
     
     this.cellA = cA;
     this.cellB = cB;
+    
+    cellA.transitions.add(this);
+    cellB.transitions.add(this);
+    this.direction = PVector.sub(cellBCenter,cellACenter);
+    this.direction.setMag(1);
     
     this.id = (int)random(999999999);
     
@@ -40,20 +46,12 @@ class Transition {
   
   public void applyTransfer() {
     
-    /*
-    if( currentPartsTransfer != 0 ) {
-      println(currentPartsTransfer);
-    }
-    */
-    
-    //if( currentPartsTransfer != 0 ) println( this.id + " delta: " + currentPartsTransfer);
-    
     cellA.transferParts( -currentPartsTransfer );
     //cellA.parts -= currentPartsTransfer;
     cellB.transferParts( currentPartsTransfer );
     //cellB.parts += currentPartsTransfer;
     
-    currentPressureDifferential = 0;
-    currentPartsTransfer = 0;
+    //currentPressureDifferential = 0;
+    //currentPartsTransfer = 0;
   }
 }

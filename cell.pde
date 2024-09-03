@@ -6,7 +6,23 @@ class Cell {
   //double pressureLast;
   double temperature;
   
+  ArrayList<Transition> transitions = new ArrayList();
   
+  PVector currentFlow = new PVector(0,0);
+  
+  public void calculateFlow() {
+    
+    currentFlow = new PVector(0, 0);
+
+    // Iterate through each transition affecting this cell
+    for (Transition t : transitions) {
+        // Scale the direction vector by the amount of parts being transferred in this transition
+        PVector flowContribution = t.direction.copy().mult(t.currentPartsTransfer / 50000000000000L);
+
+        // Add this flow contribution to the current flow of the cell
+        currentFlow.add(flowContribution);
+    }    
+  }
   
   public void calculatePressure() {
     

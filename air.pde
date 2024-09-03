@@ -1,6 +1,6 @@
 Grid grid;
 double boltzmannConstant = 1.380649e-23;
-double viscosity = 100000.1d;
+double viscosity = 500000.1d;
 double pMaxDisplay = 8.14E-6 ;
 
 float cellSizeFactor;
@@ -23,6 +23,7 @@ void setup() {
 
 void draw() {
   
+  grid.cells[10][10].parts = 100000000000000000L;
   //println("frame");
   
   grid.tick();
@@ -33,6 +34,8 @@ void draw() {
 
 
 void drawGrid() {
+  
+  background(255);
   
   pushMatrix();
   pushStyle();
@@ -62,8 +65,14 @@ void drawGrid() {
       noStroke();
       fill(127);
       translate( grid.cellSize*cellSizeFactor/2, grid.cellSize*cellSizeFactor/2 );
-      ellipse( 0,0, pressureRadius, pressureRadius);
+      //ellipse( 0,0, pressureRadius, pressureRadius);
       
+      // Draw the flow vector
+      PVector flow = c.currentFlow.copy();
+      flow.mult(cellSizeFactor * 0.5f); // Scale the flow vector for visualization
+      stroke(0, 0, 255); // Set the color for the flow vector (blue)
+      //strokeWeight(2);
+      line(0, 0, flow.x, flow.y);
       
       popStyle();
       popMatrix();

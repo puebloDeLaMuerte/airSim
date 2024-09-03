@@ -22,13 +22,15 @@ class Grid {
 
         cells[i][ii] = new Cell();
 
-        if ( i <= x/2 ) cells[i][ii].parts = initParts;
-        if ( ii <= y/2 ) cells[i][ii].parts = cells[i][ii].parts / 2;
+        if ( i >= x/2 ) cells[i][ii].parts = initParts;
+        if ( ii >= y/2 ) cells[i][ii].parts = cells[i][ii].parts / 2;
         //else cells[i][ii].parts = 0;
 
         cells[i][ii].temperature = initTemp;
       }
     }
+    
+    
     
     createTransitions();
   }
@@ -91,9 +93,18 @@ class Grid {
 
     calculatePressures();
     calculateTransferAmounts();
+    calculateFlowVectors();
     applyTransfers();
   }
 
+
+  public void calculateFlowVectors() {
+    for ( int i = 0; i < x; i++) {
+      for ( int ii = 0; ii < y; ii++) {
+        cells[i][ii].calculateFlow();
+      }
+    }
+  }
 
   public void calculatePressures() {
 
