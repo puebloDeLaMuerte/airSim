@@ -1,15 +1,16 @@
 Grid grid;
 double boltzmannConstant = 1.380649e-23;
 double viscosity = 500000.1d;
-double pMaxDisplay = 8.14E-6 ;
+double pMaxDisplay = 2.14E-6 ; // 8.14E-6 ;
 
 float cellSizeFactor;
 float drawMargin = 40;
 
 void settings() {
   
-  size( 900, 600 );
-  grid = new Grid( 80, 50, 10, 100000000000000000L, 300.0);
+  size( 1200, 800 );
+  smooth();
+  grid = new Grid( 160, 100, 10, 100000000000000000L, 150.0);
 }
 
 
@@ -23,10 +24,14 @@ void setup() {
 
 void draw() {
   
-  grid.cells[10][10].parts = 100000000000000000L;
+  
   //println("frame");
   
-  grid.tick();
+  for( int i = 0; i < 50; i++ ) {
+    grid.cells[10][10].parts = 100000000000000000L;
+    grid.tick();  
+  }
+  
   
   drawGrid();
 }
@@ -58,14 +63,14 @@ void drawGrid() {
       int amount = mapLongToInt(c.parts, 25000000000000000L, 100000000000000000L, 0, 255);
       //fill( amount);
       fill(250);
-      rect( 0,0, grid.cellSize * cellSizeFactor, grid.cellSize * cellSizeFactor);
+      //rect( 0,0, grid.cellSize * cellSizeFactor, grid.cellSize * cellSizeFactor);
       
       // draw cell pressure indicator
       float pressureRadius = mapDoubleToFloat( c.pressure, 0, pMaxDisplay, 0, grid.cellSize) * cellSizeFactor;
       noStroke();
       fill(127);
       translate( grid.cellSize*cellSizeFactor/2, grid.cellSize*cellSizeFactor/2 );
-      //ellipse( 0,0, pressureRadius, pressureRadius);
+      ellipse( 0,0, pressureRadius, pressureRadius);
       
       // Draw the flow vector
       PVector flow = c.currentFlow.copy();

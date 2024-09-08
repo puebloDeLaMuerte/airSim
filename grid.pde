@@ -24,7 +24,7 @@ class Grid {
 
         if ( i >= x/2 ) cells[i][ii].parts = initParts;
         if ( ii >= y/2 ) cells[i][ii].parts = cells[i][ii].parts / 2;
-        //else cells[i][ii].parts = 0;
+        //cells[i][ii].parts = 100;
 
         cells[i][ii].temperature = initTemp;
       }

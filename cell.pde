@@ -17,7 +17,7 @@ class Cell {
     // Iterate through each transition affecting this cell
     for (Transition t : transitions) {
         // Scale the direction vector by the amount of parts being transferred in this transition
-        PVector flowContribution = t.direction.copy().mult(t.currentPartsTransfer / 50000000000000L);
+        PVector flowContribution = t.direction.copy().mult(t.currentPartsTransfer / 30000000000000L);
 
         // Add this flow contribution to the current flow of the cell
         currentFlow.add(flowContribution);
