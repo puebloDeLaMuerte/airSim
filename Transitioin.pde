@@ -8,6 +8,7 @@ class Transition {
   
   double currentPressureDifferential;
   long currentPartsTransfer;
+  long previousPartsTransfer;
   double currentTransferTemperature;
   
   
@@ -40,7 +41,9 @@ class Transition {
       currentPartsTransfer = (long)(currentPressureDifferential * weight * cellB.parts * viscosity);
     } else currentPartsTransfer = 0;
     
+    currentPartsTransfer = (currentPartsTransfer / flowInertiaQuotient) + (previousPartsTransfer / flowInertiaQuotient * flowInertiaQuotientInverse); 
     
+    previousPartsTransfer = currentPartsTransfer;
   }
   
   

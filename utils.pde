@@ -1,3 +1,5 @@
+long flowInertiaQuotientInverse;
+
 float mapDoubleToFloat(double value, double start1, double stop1, float start2, float stop2) {
     return (float)((value - start1) / (stop1 - start1) * (stop2 - start2) + start2);
 }
