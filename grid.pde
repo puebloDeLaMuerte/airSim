@@ -2,7 +2,7 @@ class Grid {
 
   Cell[][] cells;
   Transition[] transitions;
-  
+
   int x, y;
   float cellVolume;
   float cellSize;
@@ -29,14 +29,14 @@ class Grid {
         cells[i][ii].temperature = initTemp;
       }
     }
-    
-    
-    
+
+
+
     createTransitions();
   }
 
   private void createTransitions() {
-    
+
     ArrayList<Transition> temptransitions = new ArrayList<>();
 
     // Iterate over each cell
@@ -64,20 +64,20 @@ class Grid {
               Transition t = new Transition(cells[i][ii], cells[ni][nii], cellACenter, cellBCenter, cellVolume, cellVolume);
               /*
               boolean doAdd = true;
-              for( Transition tt : temptransitions ) {
-                if( tt.cellA == t.cellA && tt.cellB == t.cellB ) {
-                  doAdd = false;
-                  println("securityCheck");
-                  break;
-                }
-                if( tt.cellA == t.cellB && tt.cellB == t.cellA ) {
-                  doAdd = false;
-                  println("securityCheck");
-                  break;
-                }
-              }
-              if( doAdd ) temptransitions.add(t);
-              */
+               for( Transition tt : temptransitions ) {
+               if( tt.cellA == t.cellA && tt.cellB == t.cellB ) {
+               doAdd = false;
+               println("securityCheck");
+               break;
+               }
+               if( tt.cellA == t.cellB && tt.cellB == t.cellA ) {
+               doAdd = false;
+               println("securityCheck");
+               break;
+               }
+               }
+               if( doAdd ) temptransitions.add(t);
+               */
               temptransitions.add(t);
             }
           }
@@ -91,10 +91,23 @@ class Grid {
 
   public void tick() {
 
+    if( applyThermicEnvironment ) applyTemperatureEnvironment();
     calculatePressures();
     calculateTransferAmounts();
     calculateFlowVectors();
     applyTransfers();
+  }
+
+
+  public void applyTemperatureEnvironment() {
+    for ( int i = 0; i < x; i++) {
+
+      cells[i][0].applyTemperatureDelta( map(i, 0, x, -1000000000000000L, 0) );
+      cells[i][y-1].applyTemperatureDelta( map(i, 0, x, 0, 1000000000000000L) );
+
+      //if( i < x/2 ) cells[i][0].applyTemperatureDelta(-0.1d);
+      //if( i > x/2 ) cells[i][y-1].applyTemperatureDelta(0.1d);
+    }
   }
 
 
@@ -106,6 +119,7 @@ class Grid {
     }
   }
 
+
   public void calculatePressures() {
 
     for ( int i = 0; i < x; i++) {
@@ -114,18 +128,18 @@ class Grid {
       }
     }
   }
-  
-  
+
+
   public void calculateTransferAmounts() {
-    for( Transition t : transitions ) {
+    for ( Transition t : transitions ) {
       t.calculateTransferAmount();
     }
   }
-  
-  
+
+
   public void applyTransfers() {
-    for( Transition t : transitions ) {
-      t.applyTransfer();
+    for ( Transition t : transitions ) {
+      t.applyTransferAndTemps();
     }
   }
 }

@@ -7,3 +7,8 @@ float mapDoubleToFloat(double value, double start1, double stop1, float start2, 
 int mapLongToInt(long value, long fromLow, long fromHigh, int toLow, int toHigh) {
     return (int)((value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow);
 }
+
+
+float mapLongToFloat(long value, long fromLow, long fromHigh, float toLow, float toHigh) {
+    return (float)((value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow);
+}
