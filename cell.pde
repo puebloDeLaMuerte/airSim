@@ -1,9 +1,8 @@
 class Cell {
 
   long parts;
-  //long partsLast;
   double pressure;
-  //double pressureLast;
+  double density;
   double temperature;
 
   ArrayList<Transition> transitions = new ArrayList();
@@ -17,12 +16,16 @@ class Cell {
     // Iterate through each transition affecting this cell
     for (Transition t : transitions) {
       // Scale the direction vector by the amount of parts being transferred in this transition
-      PVector flowContribution = t.direction.copy().mult((float)t.currentPartsTransfer / (float)300000000);
+      PVector flowContribution = t.direction.copy().mult((float)t.currentTotalPartsTransfer / (float)300000000);
 
       // Add this flow contribution to the current flow of the cell
       currentFlow.add(flowContribution);
     }
   }
+  
+  public void calculateDensity() {
+    this.density = (double) this.parts / grid.cellVolume;
+}
 
   public void calculatePressure() {
 
@@ -41,12 +44,18 @@ class Cell {
   public void applyTemperatureDelta(double delta) {
     
     delta /= this.parts;
+    //println("delta: " + delta );
     
     if (this.temperature > Double.MAX_VALUE - delta) {
       this.temperature = Double.MAX_VALUE-1;
+      //println("max temp");
     } else {
       this.temperature += delta;
+      //println("temp delta: " + delta);
     }
-    if ( this.temperature < 1d ) this.temperature = 1d;
+    if ( this.temperature < 1d ) {
+      this.temperature = 1d;
+      //println("min delta");
+    }
   }
 }

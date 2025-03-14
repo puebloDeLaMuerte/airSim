@@ -93,7 +93,9 @@ class Grid {
 
     if( applyThermicEnvironment ) applyTemperatureEnvironment();
     calculatePressures();
-    calculateTransferAmounts();
+    calculatePressureTransferAmounts();
+    calculateDensities();
+    calculateBuoyancyTransferAmounts();
     calculateFlowVectors();
     applyTransfers();
   }
@@ -119,6 +121,24 @@ class Grid {
     }
   }
 
+  
+  public void calculateDensities() {
+    for ( int i = 0; i < x; i++) {
+      for ( int ii = 0; ii < y; ii++) {
+        cells[i][ii].calculateDensity();
+      }
+    }
+  }
+  
+  
+  public void calculateBuoyancyTransferAmounts() {
+    for (Transition t : transitions) {
+      if (t.isVertical) {
+          t.calculateBuoyancyTransferAmount();
+      }
+    }
+  }
+
 
   public void calculatePressures() {
 
@@ -130,16 +150,17 @@ class Grid {
   }
 
 
-  public void calculateTransferAmounts() {
+  public void calculatePressureTransferAmounts() {
     for ( Transition t : transitions ) {
-      t.calculateTransferAmount();
+      t.calculatePressureTransferAmount();
     }
   }
 
 
   public void applyTransfers() {
     for ( Transition t : transitions ) {
-      t.applyTransferAndTemps();
+      t.calculateTotalPartsTransfer();
+      t.applyTransfer();
     }
   }
 }

@@ -3,14 +3,17 @@ Grid grid;
 double boltzmannConstant     = 1.380649e-23;
 double viscosity             = 500000.1d;
 long   flowInertiaQuotient   = 2000L;
+double buoyancyFactor        = 0.001d;
 
 float  pressureRadiusMax     = 30f;
 double pMaxDisplay           = 2.14E-6 ; // 8.14E-6 ;
-float  flowIndicatorLength   = 15;
+float  flowIndicatorLength   = 10;
 
 
 float cellSizeFactor;
 float drawMargin = 40;
+
+int ticksPerFrame = 100;
 
 boolean drawMassIndicator = true;
 boolean drawPressureIndicator = false;
@@ -41,7 +44,7 @@ void setup() {
 void draw() {
 
   if ( runSimulation ) {
-    for ( int i = 0; i < 50; i++ ) {
+    for ( int i = 0; i < ticksPerFrame; i++ ) {
       //grid.cells[10][10].parts = 100000000000000000L; // influx for testing
       grid.tick();
     }
@@ -126,7 +129,7 @@ void drawGrid() {
       if ( drawFlowIndicator ) {
         
         drawLowFlowIndicator(c);
-        //drawHighFlowIndicator(c);
+        drawHighFlowIndicator(c);
       }
 
       popStyle();
@@ -145,10 +148,10 @@ public void drawLowFlowIndicator(Cell c) {
     PVector lowFlow = c.currentFlow.copy();
     double lowFlowMagnitude = lowFlow.mag();
     float lowFlowMaxLength = cellSizeFactor * flowIndicatorLength;
-    float lowFlowScale = mapDoubleToFloat(lowFlowMagnitude,  0d, 0.001d,  0, lowFlowMaxLength); // Sensible scaling for small values
+    float lowFlowScale = mapDoubleToFloat(lowFlowMagnitude,  0d, 0.002d,  0, lowFlowMaxLength); // Sensible scaling for small values
     lowFlowScale = min(lowFlowScale, lowFlowMaxLength);
     lowFlow.normalize().mult(lowFlowScale); // Scale the low flow vector
-    stroke(0, 0, 255, 127); // Blue color for low flow
+    stroke(0, 0, 255, 84); // Blue color for low flow
     strokeWeight(1); // Thin line for low flow
     line(0, 0, lowFlow.x, lowFlow.y);
 
@@ -157,15 +160,15 @@ public void drawLowFlowIndicator(Cell c) {
 public void drawHighFlowIndicator(Cell c) {
   
 // Draw the high current flow vector (only scaled if current is very high)
-    PVector highFlow = c.currentFlow.copy();
-    float highFlowMagnitude = highFlow.mag();
-    if (highFlowMagnitude > 10 * cellSizeFactor) { // Threshold for higher flows
-        float highFlowScale = map(highFlowMagnitude, 10 * cellSizeFactor, 30 * cellSizeFactor, 0, cellSizeFactor * 10); // Scale for higher flows
-        highFlow.normalize().mult(highFlowScale); // Scale the high flow vector
-        stroke(255, 0, 0, 127); // Red color for high flow
-        strokeWeight(2); // Thicker line for high flow
-        line(0, 0, highFlow.x, highFlow.y);
-    }
+  PVector highFlow = c.currentFlow.copy();
+  float highFlowMagnitude = highFlow.mag();
+  float highFlowMaxLength = cellSizeFactor * flowIndicatorLength;
+  float highFlowScale = map(highFlowMagnitude, 0, 30000, 0, highFlowMaxLength); // Scale for higher flows
+  highFlowScale = min(highFlowScale, highFlowMaxLength);
+  highFlow.normalize().mult(highFlowScale); // Scale the high flow vector
+  stroke(125, 40, 255, 84); // Red color for high flow
+  strokeWeight(4); // Thicker line for high flow
+  line(0, 0, highFlow.x, highFlow.y);
 }
 
 

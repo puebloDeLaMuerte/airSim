@@ -2,14 +2,17 @@ class Transition {
 
   Cell cellA, cellB;
   int id;
+  boolean isVertical;
 
   double weight;
   PVector direction;
 
   double currentPressureDifferential;
-  long currentPartsTransfer;
-  long previousPartsTransfer;
-  double currentTransferTemperature;
+  long currentPressurePartsTransfer;
+  long currentBuoyancyPartsTransfer;
+  long currentTotalPartsTransfer;
+  long previousTotalPartsTransfer;
+  double currentTotalTransferTemperature;
 
 
   public Transition( Cell cA, Cell cB, PVector cellACenter, PVector cellBCenter, float cellAVolume, float cellBVolume ) {
@@ -28,49 +31,70 @@ class Transition {
     float volumeRatio = cellAVolume / cellBVolume;
 
     this.weight = (1.0f / distance) * volumeRatio;
+    this.isVertical = (cellACenter.x == cellBCenter.x) && (cellACenter.y != cellBCenter.y);
   }
 
 
-  public void calculateTransferAmount() {
+  public void calculateBuoyancyTransferAmount() {
+    
+    double densityDifference = cellA.density - cellB.density;
+
+    if (isVertical) {
+        // Positive transfer (from A to B) when A is denser (densityDifference > 0)
+        // Negative transfer (from B to A) when B is denser (densityDifference < 0)
+        currentBuoyancyPartsTransfer = (long)(densityDifference * weight * buoyancyFactor);
+    } else {
+        currentBuoyancyPartsTransfer = 0;
+    }
+}
+
+
+  public void calculatePressureTransferAmount() {
 
     currentPressureDifferential = cellA.pressure - cellB.pressure; // positive if A has more pressure.
 
     if ( currentPressureDifferential > 0 ) {
-      currentPartsTransfer = (long)(currentPressureDifferential * weight * cellA.parts * viscosity);
+      currentPressurePartsTransfer = (long)(currentPressureDifferential * weight * cellA.parts * viscosity);
     } else if ( currentPressureDifferential < 0 ) {
-      currentPartsTransfer = (long)(currentPressureDifferential * weight * cellB.parts * viscosity);
-    } else currentPartsTransfer = 0;
-
-    currentPartsTransfer = (currentPartsTransfer / flowInertiaQuotient) + (previousPartsTransfer / flowInertiaQuotient * flowInertiaQuotientInverse);
-
-    previousPartsTransfer = currentPartsTransfer;
+      currentPressurePartsTransfer = (long)(currentPressureDifferential * weight * cellB.parts * viscosity);
+    } else currentPressurePartsTransfer = 0;
   }
 
 
 
+  public void calculateTotalPartsTransfer() {
+    
+    currentTotalPartsTransfer = currentPressurePartsTransfer + currentBuoyancyPartsTransfer;
+    
+    currentTotalPartsTransfer = (currentTotalPartsTransfer / flowInertiaQuotient) + (previousTotalPartsTransfer / flowInertiaQuotient * flowInertiaQuotientInverse);
+
+    previousTotalPartsTransfer = currentTotalPartsTransfer;
+  }
+  
+
 
   public void applyTransfer() {
 
-    cellA.transferParts( -currentPartsTransfer );
+    cellA.transferParts( -currentTotalPartsTransfer );
     //cellA.parts -= currentPartsTransfer;
-    cellB.transferParts( currentPartsTransfer );
+    cellB.transferParts( currentTotalPartsTransfer );
     //cellB.parts += currentPartsTransfer;
 
     //currentPressureDifferential = 0;
     //currentPartsTransfer = 0;
   }
 
-  public void applyTransferAndTemps() {
+  public void applyTotalPartsTransfer() {
 
-    if (currentPartsTransfer == 0) {
+    if (currentTotalPartsTransfer == 0) {
       // No transfer, so nothing to do
       return;
     }
 
-    Cell source = currentPartsTransfer > 0 ? cellA : cellB;
-    Cell destination = currentPartsTransfer > 0 ? cellB : cellA;
+    Cell source = currentTotalPartsTransfer > 0 ? cellA : cellB;
+    Cell destination = currentTotalPartsTransfer > 0 ? cellB : cellA;
 
-    long transferAmount = Math.abs(currentPartsTransfer);
+    long transferAmount = Math.abs(currentTotalPartsTransfer);
     
     if( transferAmount > source.parts ) {
       //println("saveguard particle transfer");
